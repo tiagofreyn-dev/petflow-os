@@ -34,7 +34,7 @@ class Database {
         vacina: "Olá *{{dono_nome}}*, passamos para lembrar que já faz {{dias}} dias da última aplicação de vacina/antipulgas do *{{pet_nome}}*! 💉 Vamos manter ele protegido? Reserve aqui: {{link_agenda}}",
         sumido: "Oi *{{dono_nome}}*! Sentimos a falta do *{{pet_nome}}* por aqui... Já faz {{dias}} dias que ele não nos visita! 🥺 Preparamos um cupom especial de *15% OFF* de desconto no banho e tosa para ele retornar. Vamos agendar? {{link_agenda}}"
       },
-      whatsappConnected: true
+      whatsappConnected: false
     };
 
     // Initialize blank tables if not present in localStorage (Commercial clean-slate setup)
@@ -91,7 +91,8 @@ class Database {
     localStorage.setItem('petflow_customers', JSON.stringify(initialCustomers));
     localStorage.setItem('petflow_pets', JSON.stringify(initialPets));
     localStorage.setItem('petflow_logs', JSON.stringify(initialLogs));
-    localStorage.setItem('petflow_settings', JSON.stringify(this.settings));
+    const demoSettings = { ...this.settings, whatsappConnected: true };
+    localStorage.setItem('petflow_settings', JSON.stringify(demoSettings));
   }
 
   loadLocalDataOnly() {
