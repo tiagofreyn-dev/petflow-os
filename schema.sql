@@ -7,12 +7,9 @@
 -- 1. CRIAR A "PASTA SEPARADA" (SCHEMA POSTGRES)
 CREATE SCHEMA IF NOT EXISTS petflow;
 
--- Habilitar extensão para geração de UUID
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp" SCHEMA public;
-
 -- 2. TABELA DE CLIENTES (TUTORES) NO SCHEMA petflow
 CREATE TABLE IF NOT EXISTS petflow.customers (
-    id UUID PRIMARY KEY DEFAULT public.uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
     whatsapp TEXT NOT NULL,
     address TEXT,
@@ -32,7 +29,7 @@ WITH CHECK (true);
 
 -- 3. TABELA DE PETS NO SCHEMA petflow
 CREATE TABLE IF NOT EXISTS petflow.pets (
-    id UUID PRIMARY KEY DEFAULT public.uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     customer_id UUID NOT NULL REFERENCES petflow.customers(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
     breed TEXT NOT NULL,
@@ -60,13 +57,14 @@ CREATE INDEX IF NOT EXISTS idx_pets_name_breed ON petflow.pets(name, breed);
 
 -- 4. TABELA DE LOGS DE AUTOMAÇÃO NO SCHEMA petflow
 CREATE TABLE IF NOT EXISTS petflow.automations_logs (
-    id UUID PRIMARY KEY DEFAULT public.uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     pet_id UUID NOT NULL REFERENCES petflow.pets(id) ON DELETE CASCADE,
     message_type TEXT NOT NULL CHECK (message_type IN ('banho', 'vacina', 'sumido', 'cadastro', 'banho_concluido', 'resgate_resposta')),
     sent_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     status TEXT NOT NULL CHECK (status IN ('Enviado', 'Respondido')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
 
 ALTER TABLE petflow.automations_logs ENABLE ROW LEVEL SECURITY;
 
