@@ -37,9 +37,9 @@ class Database {
       whatsappConnected: true
     };
 
-    // If local DB is completely unseeded, write mock data to localStorage
+    // Initialize blank tables if not present in localStorage (Commercial clean-slate setup)
     if (!localStorage.getItem('petflow_customers')) {
-      this.seedLocalMockData();
+      this.initializeBlankLocalData();
     }
 
     // Try connecting to Supabase if config is present
@@ -48,6 +48,13 @@ class Database {
     } else {
       this.loadLocalDataOnly();
     }
+  }
+
+  initializeBlankLocalData() {
+    localStorage.setItem('petflow_customers', JSON.stringify([]));
+    localStorage.setItem('petflow_pets', JSON.stringify([]));
+    localStorage.setItem('petflow_logs', JSON.stringify([]));
+    localStorage.setItem('petflow_settings', JSON.stringify(this.settings));
   }
 
   seedLocalMockData() {
@@ -163,9 +170,32 @@ class Database {
     this.supabaseClient = null;
     this.isSupabaseActive = false;
     
-    // Fallback to local
-    this.seedLocalMockData();
+    // Fallback to local data as-is
     this.loadLocalDataOnly();
+  }
+
+  async clearRemoteSupabaseData() {
+    if (!this.isSupabaseActive) return false;
+    try {
+      // Deletar todos os registros de clientes do Supabase (schema petflow).
+      // Como pets e automations_logs têm restrição ON DELETE CASCADE referenciando clientes,
+      // limpar a tabela de clientes deletará em cascata todos os pets e logs associados.
+      const { error } = await this.supabaseClient
+        .from('customers')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000');
+
+      if (error) throw error;
+
+      this.customers = [];
+      this.pets = [];
+      this.logs = [];
+      this.saveLocalDataOnly();
+      return true;
+    } catch (e) {
+      console.error("Erro ao limpar dados remotos do Supabase:", e);
+      return false;
+    }
   }
 
   async fetchRemoteData() {
@@ -571,6 +601,10 @@ const App = {
     this.btnSaveSupabaseConfig = document.getElementById('btnSaveSupabaseConfig');
     this.supabaseStatusText = document.getElementById('supabaseStatusText');
 
+    // Demo Mode & Reset System Buttons
+    this.btnLoadDemoData = document.getElementById('btnLoadDemoData');
+    this.btnWipeLocalData = document.getElementById('btnWipeLocalData');
+
     // Modal Add Pet
     this.addPetModalBackdrop = document.getElementById('addPetModalBackdrop');
     this.btnOpenAddPetModal = document.getElementById('btnOpenAddPetModal');
@@ -658,6 +692,10 @@ const App = {
 
     // Supabase Connect Action
     this.btnSaveSupabaseConfig.addEventListener('click', () => this.handleSaveSupabaseConfig());
+
+    // Demo and Reset Actions
+    this.btnLoadDemoData.addEventListener('click', () => this.handleLoadDemoData());
+    this.btnWipeLocalData.addEventListener('click', () => this.handleWipeLocalData());
   },
 
   simulateLoading() {
@@ -1249,6 +1287,58 @@ const App = {
       this.btnSaveSupabaseConfig.style.color = '#000';
       this.btnSaveSupabaseConfig.innerText = 'Salvar e Conectar';
     }
+  },
+
+  handleLoadDemoData() {
+    if (this.db.isSupabaseActive) {
+      const confirmDemo = confirm("Você está conectado ao Supabase.\n\nPara carregar a demonstração sem afetar seu banco na nuvem, o aplicativo irá se desconectar temporariamente e alternar para o Modo Demonstrativo Local.\n\nDeseja prosseguir?");
+      if (!confirmDemo) return;
+      this.db.disconnectSupabase();
+      this.updateSupabaseStatusUI();
+      this.fillSettingsForm();
+    }
+    
+    this.db.seedLocalMockData();
+    this.db.loadLocalDataOnly();
+    this.db.recalculateAllPetStatuses();
+    this.showToast('Dados demonstrativos carregados com sucesso! 🚀', 'purple');
+    this.render();
+  },
+
+  async handleWipeLocalData() {
+    if (this.db.isSupabaseActive) {
+      const choice = confirm("⚠️ ATENÇÃO: Você está conectado ao Supabase!\n\nDeseja LIMPAR DEFINITIVAMENTE todas as tabelas (clientes, pets e logs) do seu banco de dados na nuvem Supabase?\n\n- Pressione OK para APAGAR TUDO do Supabase na nuvem.\n- Pressione Cancelar se quiser apenas desconectar e limpar o banco de dados local.");
+      if (choice) {
+        this.showToast('Limpando dados no Supabase... ⏳', 'purple');
+        const success = await this.db.clearRemoteSupabaseData();
+        if (success) {
+          this.showToast('Banco Supabase limpo com sucesso! 🧼', 'menta');
+        } else {
+          this.showToast('Erro ao limpar tabelas no Supabase. Verifique se o seu schema e políticas RLS permitem exclusão.', 'danger');
+        }
+        this.render();
+      } else {
+        const confirmLocal = confirm("Deseja se desconectar do Supabase e limpar o banco de dados local?");
+        if (confirmLocal) {
+          this.db.disconnectSupabase();
+          this.db.initializeBlankLocalData();
+          this.db.loadLocalDataOnly();
+          this.updateSupabaseStatusUI();
+          this.fillSettingsForm();
+          this.showToast('Banco local resetado com sucesso! 🧼', 'danger');
+          this.render();
+        }
+      }
+      return;
+    }
+
+    const confirmWipe = confirm("⚠️ Tem certeza que deseja LIMPAR todos os dados locais? Todos os clientes, pets e logs cadastrados serão excluídos definitivamente!");
+    if (!confirmWipe) return;
+
+    this.db.initializeBlankLocalData();
+    this.db.loadLocalDataOnly();
+    this.showToast('Banco de dados local resetado com sucesso! 🧼', 'danger');
+    this.render();
   },
 
   // --- WHATSAPP CONNECTION SYNC MOCKS ---
