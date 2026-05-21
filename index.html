@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PetFlow OS - Esteira Invisível e CRM para Pet Shops</title>
+  <meta name="description" content="CRM de Acompanhamento Hiper-Focado e Automação de Pós-Venda para Pet Shops. Recupere clientes e fidelize serviços recorrentes.">
+  <link rel="stylesheet" href="style.css">
+  <!-- Supabase CDN Client Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- MAIN APP CONTAINER -->
+  <div class="app-container">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div>
+        <div class="logo-container">
+          <div class="logo-icon">
+            <!-- SVG Dog Paw -->
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 14c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm-4.5-4c-.83 0-1.5-.67-1.5-1.5S6.67 7 7.5 7s1.5.67 1.5 1.5S8.33 10 7.5 10zm9 0c-.83 0-1.5-.67-1.5-1.5S15.67 7 16.5 7s1.5.67 1.5 1.5S17.33 10 16.5 10zm-11 5.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5zm13 0c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5z" />
+            </svg>
+          </div>
+          <div>
+            <span class="logo-text">PetFlow OS</span>
+          </div>
+          <span class="logo-badge">PRO</span>
+        </div>
+
+        <nav class="nav-menu">
+          <a id="navDashboard" class="nav-item active menta-link" data-view="dashboard">
+            <!-- Icon Dashboard -->
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"></path>
+            </svg>
+            Esteira Invisível
+          </a>
+          <a id="navAutomations" class="nav-item" data-view="automations">
+            <!-- Icon Zap (Automações) -->
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+            Automações CRM
+          </a>
+          <a id="navCustomers" class="nav-item" data-view="customers">
+            <!-- Icon Users -->
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+            Clientes & Pets
+          </a>
+          <a id="navSettings" class="nav-item" data-view="settings">
+            <!-- Icon Gear -->
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            Integração Whats
+          </a>
+        </nav>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="avatar" id="userAvatar">PET</div>
+          <div class="user-info">
+            <span class="user-name">Pet Shop VIP</span>
+            <span class="user-role">Painel do Administrador</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- HEADER -->
+      <header class="top-header">
+        <div class="header-title-container">
+          <h1 id="pageTitle">Esteira Invisível</h1>
+          <p id="pageSubtitle">CRM de Acompanhamento Hiper-Focado</p>
+        </div>
+        <div class="header-actions">
+          <div class="status-badge" id="whatsStatusBadge">
+            <span class="pulse-dot" id="whatsPulseDot"></span>
+            <span id="whatsStatusText">WhatsApp Conectado</span>
+          </div>
+          <button id="btnOpenAddPetModal" class="btn-primary">
+            <!-- Icon Plus -->
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
+            </svg>
+            Cadastrar Pet / Tutor
+          </button>
+        </div>
+      </header>
+
+      <!-- VIEW CONTAINER -->
+      <div class="view-container">
+
+        <!-- SKELETON SCREEN (SIMULATED LOADING) -->
+        <div id="skeletonScreen" class="skeleton-screen">
+          <div class="skeleton-kpi-grid">
+            <div class="skeleton-kpi-card"><div class="shimmer"></div></div>
+            <div class="skeleton-kpi-card"><div class="shimmer"></div></div>
+            <div class="skeleton-kpi-card"><div class="shimmer"></div></div>
+            <div class="skeleton-kpi-card"><div class="shimmer"></div></div>
+          </div>
+          <div class="skeleton-dashboard-grid">
+            <div class="skeleton-main-card"><div class="shimmer"></div></div>
+            <div class="skeleton-side-card"><div class="shimmer"></div></div>
+          </div>
+        </div>
+
+        <!-- 1. DASHBOARD VIEW -->
+        <section id="viewDashboard" class="view-panel active">
+          
+          <!-- KPI Cards Grid -->
+          <div class="kpi-grid">
+            <!-- Total Pets -->
+            <div class="glass-card kpi-card purple">
+              <div class="kpi-icon-wrapper">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
+                </svg>
+              </div>
+              <div class="kpi-data">
+                <span class="kpi-label">Total de Pets</span>
+                <span class="kpi-value" id="kpiTotalPets">0</span>
+                <span class="kpi-subtext" id="kpiTotalPetsSub">Ativos na base</span>
+              </div>
+            </div>
+            <!-- Clientes Sumidos -->
+            <div class="glass-card kpi-card orange">
+              <div class="kpi-icon-wrapper">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+              </div>
+              <div class="kpi-data">
+                <span class="kpi-label">Clientes Sumidos</span>
+                <span class="kpi-value" id="kpiLostPets">0</span>
+                <span class="kpi-subtext highlight-orange" id="kpiLostPetsSub">+45 dias sem banho</span>
+              </div>
+            </div>
+            <!-- Agendamentos Hoje -->
+            <div class="glass-card kpi-card menta">
+              <div class="kpi-icon-wrapper">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <div class="kpi-data">
+                <span class="kpi-label">Agendados Hoje</span>
+                <span class="kpi-value" id="kpiTodaySchedules">0</span>
+                <span class="kpi-subtext highlight-menta" id="kpiTodaySchedulesSub">Serviços marcados</span>
+              </div>
+            </div>
+            <!-- Faturamento Recuperado -->
+            <div class="glass-card kpi-card blue">
+              <div class="kpi-icon-wrapper">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div class="kpi-data">
+                <span class="kpi-label">Recuperado (Mês)</span>
+                <span class="kpi-value" id="kpiRecoveredIncome">R$ 0</span>
+                <span class="kpi-subtext" id="kpiRecoveredIncomeSub">Via lembretes Whats</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Two-column Section Grid -->
+          <div class="dashboard-grid">
+            
+            <!-- Left Column: Return Alerts (Invisible conveyor belt) -->
+            <div class="glass-card">
+              <div class="section-header menta">
+                <div>
+                  <h2>
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Próximos Alertas de Retorno
+                  </h2>
+                  <span class="section-subtitle">Pets aguardando lembrete de agendamento por frequência ideal</span>
+                </div>
+              </div>
+              <div class="alerts-list" id="dashboardAlertsList">
+                <!-- Dynamically generated with JS -->
+              </div>
+            </div>
+
+            <!-- Right Column: Pet Cycle Distribution -->
+            <div class="glass-card chart-card">
+              <div class="section-header">
+                <div>
+                  <h2>
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
+                    </svg>
+                    Distribuição por Ciclo
+                  </h2>
+                  <span class="section-subtitle">Ciclo de recorrência ideal dos pets ativos</span>
+                </div>
+              </div>
+
+              <!-- Interactive Chart View -->
+              <div class="chart-wrapper">
+                <div class="chart-container-svg">
+                  <svg viewBox="0 0 100 100" width="180" height="180">
+                    <circle class="chart-circle-bg" cx="50" cy="50" r="40"></circle>
+                    <circle id="chartCircleSemanal" class="chart-circle-val" cx="50" cy="50" r="40" stroke="var(--accent-menta)"></circle>
+                    <circle id="chartCircleQuinzenal" class="chart-circle-val" cx="50" cy="50" r="40" stroke="var(--accent-purple)"></circle>
+                    <circle id="chartCircleMensal" class="chart-circle-val" cx="50" cy="50" r="40" stroke="var(--accent-blue)"></circle>
+                    <circle id="chartCircleInativo" class="chart-circle-val" cx="50" cy="50" r="40" stroke="var(--accent-red)"></circle>
+                  </svg>
+                  <div class="chart-center-text">
+                    <div class="chart-center-num" id="chartTotalPetsCenter">0</div>
+                    <div class="chart-center-lbl">Pets</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="chart-legend">
+                <div class="legend-item">
+                  <span class="legend-color semanal"></span>
+                  <div class="legend-details">
+                    <span class="legend-name">Semanais</span>
+                    <span class="legend-val" id="legendSemanais">0</span>
+                  </div>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-color quinzenal"></span>
+                  <div class="legend-details">
+                    <span class="legend-name">Quinzenais</span>
+                    <span class="legend-val" id="legendQuinzenais">0</span>
+                  </div>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-color mensal"></span>
+                  <div class="legend-details">
+                    <span class="legend-name">Mensais</span>
+                    <span class="legend-val" id="legendMensais">0</span>
+                  </div>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-color inativo"></span>
+                  <div class="legend-details">
+                    <span class="legend-name">Inativos</span>
+                    <span class="legend-val" id="legendInativos">0</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- 2. AUTOMATIONS MODULE VIEW -->
+        <section id="viewAutomations" class="view-panel">
+          <div class="automations-grid">
+            
+            <!-- Left: Configurations and rules -->
+            <div>
+              <div class="glass-card rules-container">
+                <div class="section-header">
+                  <div>
+                    <h2>Regras de Recorrência Inteligente</h2>
+                    <span class="section-subtitle">Gatilhos configurados para disparos pós-serviço e resgate</span>
+                  </div>
+                </div>
+
+                <!-- Gatilho 1: Banho e Tosa -->
+                <div class="glass-card rule-card active" id="cardTriggerBanho">
+                  <div class="rule-header">
+                    <div class="rule-title-group">
+                      <div class="rule-icon">
+                        <!-- Icon Dog Paw -->
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m11.32 11.32l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <span class="rule-title">Gatilho Banho e Tosa</span>
+                        <p class="rule-desc">Lembrete automático para o tutor agendar o próximo banho do pet.</p>
+                      </div>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="toggleTriggerBanho" checked>
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <div class="rule-settings">
+                    <label for="inputDaysBanho">Disparar lembrete após</label>
+                    <input type="number" id="inputDaysBanho" class="rule-input" value="7">
+                    <label>dias do último banho concluído.</label>
+                  </div>
+                </div>
+
+                <!-- Gatilho 2: Vacina e Antipulgas -->
+                <div class="glass-card rule-card active" id="cardTriggerVacina">
+                  <div class="rule-header">
+                    <div class="rule-title-group">
+                      <div class="rule-icon">
+                        <!-- Icon Shield -->
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <span class="rule-title">Gatilho Vacina / Antipulgas</span>
+                        <p class="rule-desc">Aviso preventivo para controle de saúde e aplicações.</p>
+                      </div>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="toggleTriggerVacina" checked>
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <div class="rule-settings">
+                    <label for="inputMonthsVacina">Disparar aviso a cada</label>
+                    <input type="number" id="inputMonthsVacina" class="rule-input" value="3">
+                    <label>meses da última dose cadastrada.</label>
+                  </div>
+                </div>
+
+                <!-- Gatilho 3: Cliente Sumido -->
+                <div class="glass-card rule-card active" id="cardTriggerSumido">
+                  <div class="rule-header">
+                    <div class="rule-title-group">
+                      <div class="rule-icon">
+                        <!-- Icon Heart Broken -->
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <span class="rule-title">Gatilho Cliente Sumido (+45 dias)</span>
+                        <p class="rule-desc">Campanha especial com promoção para pets inativos.</p>
+                      </div>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="toggleTriggerSumido" checked>
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <div class="rule-settings">
+                    <label for="inputDaysSumido">Considerar sumido após</label>
+                    <input type="number" id="inputDaysSumido" class="rule-input" value="45">
+                    <label>dias de ausência absoluta.</label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Message Template Editor -->
+              <div class="glass-card template-editor-card">
+                <div class="section-header">
+                  <div>
+                    <h2>Modelos de Mensagem do CRM</h2>
+                    <span class="section-subtitle">Personalize as mensagens dinâmicas disparadas no WhatsApp</span>
+                  </div>
+                </div>
+                
+                <div class="editor-wrapper">
+                  <div class="tabs-mini">
+                    <button class="tab-mini-btn active" id="btnTabTemplateBanho" data-template-type="banho">Gatilho Banho</button>
+                    <button class="tab-mini-btn" id="btnTabTemplateVacina" data-template-type="vacina">Gatilho Vacina</button>
+                    <button class="tab-mini-btn" id="btnTabTemplateSumido" data-template-type="sumido">Gatilho Sumido</button>
+                  </div>
+
+                  <div class="variable-tags">
+                    <button type="button" class="tag-btn" data-var="{{dono_nome}}">Tutor (Nome)</button>
+                    <button type="button" class="tag-btn" data-var="{{pet_nome}}">Pet (Nome)</button>
+                    <button type="button" class="tag-btn" data-var="{{dias}}">Quantidade de dias</button>
+                    <button type="button" class="tag-btn" data-var="{{link_agenda}}">Link Agenda</button>
+                  </div>
+
+                  <textarea id="templateTextarea" class="template-textarea"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Live preview inside a smartphone mock -->
+            <div class="smartphone-container">
+              <div class="phone-mockup">
+                <div class="phone-notch"></div>
+                <div class="phone-header">
+                  <div class="phone-avatar" id="phoneMockupAvatar">T</div>
+                  <div class="phone-contact-info">
+                    <span class="phone-contact-name" id="phoneMockupTutorName">Tutor</span>
+                    <span class="phone-contact-status">online</span>
+                  </div>
+                </div>
+                <div class="phone-screen" id="phoneChatScreen">
+                  <div class="chat-bubble">
+                    Olá! Aqui é da PetFlow, como vai o Floquinho?
+                    <span class="chat-time">09:15</span>
+                  </div>
+                  <div class="chat-bubble chat-bubble-out" id="phoneChatPreviewBubble">
+                    <!-- Preview content loaded via JS -->
+                    <span class="chat-time" id="phoneChatTime">23:45</span>
+                  </div>
+                </div>
+                <div class="phone-input-bar">
+                  <div class="phone-input-placeholder">Escreva uma mensagem...</div>
+                  <div class="phone-send-btn">
+                    <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- 3. CUSTOMERS DATABASE VIEW -->
+        <section id="viewCustomers" class="view-panel">
+          <div class="glass-card">
+            
+            <div class="table-header-row">
+              <div class="search-bar-wrapper">
+                <!-- Icon Search -->
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input type="text" id="inputTableSearch" class="search-input" placeholder="Buscar por Pet, Raça ou Tutor...">
+              </div>
+              <div class="filter-group">
+                <button class="filter-btn active" data-filter="all" id="btnFilterAll">Todos</button>
+                <button class="filter-btn" data-filter="active" id="btnFilterActive">Ativos</button>
+                <button class="filter-btn" data-filter="alert" id="btnFilterAlert">Alerta de Retorno</button>
+                <button class="filter-btn" data-filter="inactive" id="btnFilterInactive">Inativos (+45d)</button>
+              </div>
+            </div>
+
+            <!-- Table component -->
+            <div class="table-wrapper">
+              <table class="custom-table" id="customersTable">
+                <thead>
+                  <tr>
+                    <th>Pet & Ficha</th>
+                    <th>Tutor / Contato</th>
+                    <th>Frequência</th>
+                    <th>Último Banho</th>
+                    <th>Status</th>
+                    <th style="width: 100px; text-align: center;">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="customersTableBody">
+                  <!-- Dynamically populated with JS -->
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- 4. INTEGRATIONS / QR CODE VIEW -->
+        <section id="viewSettings" class="view-panel">
+          <div class="settings-grid">
+            
+            <!-- Setup details -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+              <!-- WhatsApp Connection Details -->
+              <div class="glass-card">
+                <div class="section-header">
+                  <div>
+                    <h2>Integração WhatsApp Business API</h2>
+                    <span class="section-subtitle">Conecte seu celular para os disparos automáticos</span>
+                  </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13px; line-height: 1.5; color: var(--text-secondary);">
+                  <div style="background: rgba(168, 85, 247, 0.04); border: 1px solid rgba(168, 85, 247, 0.15); padding: 12px; border-radius: var(--radius-sm); display: flex; gap: 10px;">
+                    <svg style="color: var(--accent-purple); width: 20px; height: 20px; flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                      <span style="color: #fff; font-weight: 700; display: block; margin-bottom: 2px;">Como conectar:</span>
+                      Abra o WhatsApp -> Aparelhos Conectados -> Conectar um Aparelho. Aponte a câmera para o QR Code ao lado.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Supabase Custom Schema Nile Site Integration -->
+              <div class="glass-card">
+                <div class="section-header" style="margin-bottom: 12px;">
+                  <div>
+                    <h2 style="color: var(--accent-menta);">
+                      <svg style="color: var(--accent-menta); display: inline-block; vertical-align: middle; margin-right: 4px; width: 18px; height: 18px;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
+                      </svg>
+                      Nuvem Supabase (Nile Site)
+                    </h2>
+                    <span class="section-subtitle">Tabelas salvas no schema isolado <strong>'petflow'</strong></span>
+                  </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 14px;">
+                  <div class="form-group">
+                    <label for="inputSupabaseUrl" style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">SUPABASE PROJECT URL</label>
+                    <input type="text" id="inputSupabaseUrl" class="form-control" placeholder="https://xxxx.supabase.co" style="font-size: 12px; font-family: monospace;">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="inputSupabaseAnonKey" style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">SUPABASE ANON API KEY</label>
+                    <input type="password" id="inputSupabaseAnonKey" class="form-control" placeholder="eyJhbGciOi..." style="font-size: 12px; font-family: monospace;">
+                  </div>
+
+                  <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 6px; gap: 10px;">
+                    <span id="supabaseStatusText" style="font-size: 11px; font-weight: 700; color: var(--text-muted);">
+                      Offline • Modo Demonstrativo Local
+                    </span>
+                    <button id="btnSaveSupabaseConfig" class="btn-primary" style="padding: 8px 14px; font-size: 12px; font-weight: 700; background: linear-gradient(135deg, var(--accent-menta), #059669); color: #000; box-shadow: 0 4px 10px rgba(0, 245, 160, 0.15);">
+                      Salvar e Conectar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- QR Code Connection Mock -->
+            <div class="glass-card qr-card">
+              <span style="font-family: var(--font-title); font-size: 16px; font-weight: 700; color: #fff;">Conectar via QR Code</span>
+              <p class="section-subtitle" style="margin-top: 4px;">Aponte o WhatsApp do seu celular empresarial</p>
+              
+              <div class="qr-box-container">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://petflow-os-mock-connection.web.app&color=09090b" alt="Conexão WhatsApp QR Code" class="qr-image" id="qrImage">
+                <div class="qr-overlay" id="qrOverlay">
+                  <!-- Spinner -->
+                  <svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.1)"></circle>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.49 8.49l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.49-8.49l2.83-2.83"></path>
+                  </svg>
+                  <span class="qr-overlay-text" id="qrOverlayText">Sincronizando...</span>
+                </div>
+              </div>
+
+              <div class="qr-status-indicator">
+                <span class="qr-status-dot connected" id="qrStatusDot"></span>
+                <span id="qrStatusLabel">Conectado e Operacional</span>
+              </div>
+
+              <button id="btnToggleConnection" class="btn-secondary" style="margin-top: 20px; width: 100%;">
+                Desconectar Aparelho
+              </button>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- DRAWER SIDE MODAL (TIMELINE & DETAILS) -->
+  <div class="drawer-backdrop" id="drawerBackdrop">
+    <div class="drawer" id="drawer">
+      <div class="drawer-header">
+        <div class="drawer-title-area">
+          <div class="pet-avatar" id="drawerPetAvatar">?</div>
+          <div>
+            <h2 id="drawerPetName" style="font-family: var(--font-title); font-size: 18px; font-weight: 800; color: #fff;">Floquinho</h2>
+            <span id="drawerTutorName" class="section-subtitle">Tutor: Tiago</span>
+          </div>
+        </div>
+        <button class="btn-close-drawer" id="btnCloseDrawer">
+          <!-- Icon Close -->
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="drawer-content">
+        <!-- Ficha Cadastral -->
+        <div class="detail-grid">
+          <div class="detail-item">
+            <span class="detail-label">Raça / Porte</span>
+            <span class="detail-val" id="drawerPetBreed">Shih Tzu (Pequeno)</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Pelagem</span>
+            <span class="detail-val" id="drawerPetCoat">Longa lisa</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Frequência Ideal</span>
+            <span class="detail-val" id="drawerPetFrequency">Semanal (7d)</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Último Banho</span>
+            <span class="detail-val" id="drawerPetLastService">10/05/2026</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 24px;">
+          <button id="btnDrawerRecordService" class="btn-primary" style="flex-grow: 1; justify-content: center; font-size: 12.5px;">
+            <!-- Icon Check -->
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+            </svg>
+            Registrar Banho Concluído
+          </button>
+          <button id="btnDrawerWhatsApp" class="btn-whatsapp" style="padding: 10px 16px;">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 001.333 4.993L2 22l5.177-1.357a9.95 9.95 0 004.832 1.241h.004c5.507 0 9.991-4.479 9.992-9.986.002-2.67-1.036-5.18-2.925-7.071S14.682 2 12.012 2zm5.727 14.126c-.25.703-1.455 1.282-2.007 1.364-.477.071-.47.288-2.738-.616-2.906-1.159-4.78-4.109-4.925-4.303-.146-.195-1.173-1.558-1.173-2.975 0-1.417.744-2.112 1.007-2.393.264-.282.576-.352.768-.352.193 0 .385.002.553.01.175.008.409-.065.64.489.239.576.818 1.99.889 2.135.071.146.12.316.02.512-.1.196-.151.317-.3.489-.15.172-.315.385-.45.516-.151.146-.31.306-.133.61.177.303.788 1.299 1.688 2.099.9.8 1.657 1.047 1.958 1.169.301.122.476.103.654-.103.178-.206.768-.891.973-1.195.205-.304.41-.254.692-.15.281.103 1.787.842 2.094.996.307.153.511.23.585.358.075.128.075.742-.175 1.445z"/>
+            </svg>
+            Lembrete
+          </button>
+        </div>
+
+        <span class="timeline-title">
+          <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          Linha do Tempo de Automações
+        </span>
+
+        <div class="timeline" id="drawerTimeline">
+          <!-- Dynamically populated with JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD PET MODAL DIALOG -->
+  <div class="modal-backdrop" id="addPetModalBackdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <!-- Icon Plus -->
+          <svg style="color: var(--accent-purple); width: 22px; height: 22px;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
+          </svg>
+          Cadastrar Novo Pet / Tutor
+        </h2>
+        <button class="btn-close-drawer" id="btnCloseAddPetModal">
+          <!-- Icon Close -->
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <form id="addPetForm">
+        <div class="modal-body">
+          <div class="form-grid">
+            <!-- TUTOR INFO -->
+            <span class="form-section-title">Dados do Tutor (Responsável)</span>
+            
+            <div class="form-group full-width">
+              <label for="formTutorName">Nome Completo do Tutor *</label>
+              <input type="text" id="formTutorName" class="form-control" placeholder="Ex: Tiago de Souza" required>
+            </div>
+
+            <div class="form-group">
+              <label for="formTutorWhatsapp">WhatsApp *</label>
+              <input type="tel" id="formTutorWhatsapp" class="form-control" placeholder="Ex: (11) 99999-9999" required>
+            </div>
+
+            <div class="form-group">
+              <label for="formTutorAddress">Endereço (Opcional)</label>
+              <input type="text" id="formTutorAddress" class="form-control" placeholder="Ex: Rua das Flores, 123">
+            </div>
+
+            <!-- PET INFO -->
+            <span class="form-section-title menta">Dados do Pet</span>
+
+            <div class="form-group">
+              <label for="formPetName">Nome do Pet *</label>
+              <input type="text" id="formPetName" class="form-control" placeholder="Ex: Floquinho" required>
+            </div>
+
+            <div class="form-group">
+              <label for="formPetBreed">Raça *</label>
+              <input type="text" id="formPetBreed" class="form-control" placeholder="Ex: Shih Tzu" required>
+            </div>
+
+            <div class="form-group">
+              <label for="formPetSize">Porte *</label>
+              <select id="formPetSize" class="form-control" required>
+                <option value="" disabled selected>Selecione...</option>
+                <option value="Mini">Mini (Ex: Pinscher)</option>
+                <option value="Pequeno">Pequeno (Ex: Shih Tzu, Pug)</option>
+                <option value="Médio">Médio (Ex: Cocker, Border Collie)</option>
+                <option value="Grande">Grande (Ex: Golden Retriever)</option>
+                <option value="Gigante">Gigante (Ex: Dogue Alemão)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="formPetCoat">Tipo de Pelagem *</label>
+              <select id="formPetCoat" class="form-control" required>
+                <option value="" disabled selected>Selecione...</option>
+                <option value="Curta">Curta (Ex: Pug, Boxer)</option>
+                <option value="Média">Média (Ex: Golden, Husky)</option>
+                <option value="Longa Lisa">Longa Lisa (Ex: Shih Tzu, Yorkshire)</option>
+                <option value="Longa Ondulada">Longa Ondulada / Fio Duro (Ex: Poodle, Schnauzer)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="formPetFrequency">Frequência Ideal de Banho *</label>
+              <select id="formPetFrequency" class="form-control" required>
+                <option value="7">Semanal (7 em 7 dias)</option>
+                <option value="15" selected>Quinzenal (15 em 15 dias)</option>
+                <option value="30">Mensal (30 em 30 dias)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="formPetLastService">Data do Último Banho *</label>
+              <input type="date" id="formPetLastService" class="form-control" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="btnCancelAddPetModal">Cancelar</button>
+          <button type="submit" class="btn-primary">Salvar e Registrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
